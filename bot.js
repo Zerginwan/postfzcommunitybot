@@ -100,7 +100,7 @@ bot.command('set_chats', async (ctx) => {
                 if (err) throw err;
                 ctx.reply('Старый JSON: \n' + data);
             });
-            fs.writeFile(config.chat_file, ctx.update.message.text);
+            fs.writeFile(config.chat_file, ctx.update.message.text.replace('/set_chats','').trim());
             fs.readFile(config.chat_file, (err, data) =>{
                 if (err) throw err;
                 ctx.reply('Новый JSON: \n' + data);
