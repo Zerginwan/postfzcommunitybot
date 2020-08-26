@@ -46,6 +46,7 @@ function IsAdmin(username){
 }
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
+    if(message.text != ''){
     let newMessage = message.text +'\n\n Автор: @';
     newMessage += message.from.username;
     if(message.chat.type != 'private'){
@@ -57,7 +58,7 @@ async function SendEventMessage(message){
         newMessage += 'Источник: https://t.me/c/' + (message.chat.id +1000000000000).toString().slice(1) +'/'+message.message_id;
     }
     bot.telegram.sendMessage(config.channel_id, newMessage).catch((err)=>{bot.telegram.sendMessage(config.admin_id, err);});
-    
+}
 
 }
 
