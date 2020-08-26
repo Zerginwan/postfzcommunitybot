@@ -34,7 +34,14 @@ function GetChatURL(title){
     });
    
 }
-
+function IsAdmin(username){
+    config.admins.forEach(admin => {
+        if(username == admin){
+            return true;
+        }
+    });
+    return false;
+}
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     let newMessage = message.text +'\n\n Автор: @';
@@ -55,7 +62,7 @@ async function SendEventMessage(message){
 bot.start((ctx) => ctx.reply(startMessage)); //ответ бота на команду /start
 bot.help((ctx) => {
     ctx.reply(helpMessage);
-    if(ctx.update.message.from.username in config.admins){
+    if(IsAdmin(ctx.update.message.from.username)){
         ctx.telegram.sendMessage(ctx.from.id, helpMessageForAdmins)
     }
 }); //ответ бота на команду /help
@@ -74,7 +81,7 @@ bot.command('event', (ctx) => {
 }); // //ответ бота на команду /event
 
 bot.command('get_chats', (ctx) => {
-    if(ctx.update.message.from.username in config.admins){
+    if(IsAdmin(ctx.update.message.from.username)){
         tryFile();
         fs.readFile(config.chat_file, (err, data) =>{
             if (err) throw err;
@@ -83,7 +90,7 @@ bot.command('get_chats', (ctx) => {
     }
 }); // //ответ бота на команду /get_chats
 bot.command('set_chats', async (ctx) => {
-    if(ctx.update.message.from.username in config.admins){
+    if(IsAdmin(ctx.update.message.from.username)){
         tryFile()
         await fs.readFile(config.chat_file, (err, data) =>{
             if (err) throw err;
@@ -97,7 +104,7 @@ bot.command('set_chats', async (ctx) => {
     }
 }); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
-    if(ctx.update.message.from.username in config.admins){
+    if(IsAdmin(ctx.update.message.from.username)){
         if(ctx.update.message.text == '/add_chat'){
             ctx.telegram.sendMessage(ctx.from.id, add_chatMessage)
         }else{
