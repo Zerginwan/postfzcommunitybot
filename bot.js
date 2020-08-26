@@ -54,7 +54,7 @@ async function SendEventMessage(message){
         if(link){
             newMessage +='Ссылка на чат:\n'+ link + '\n';
         }
-        newMessage += '[Источник](https://t.me/c/' + (message.chat.id +100000000000) +'/'+message.message_id+')';
+        newMessage += '[Источник](https://t.me/c/' + (message.chat.id +1000000000000) +'/'+message.message_id+')';
     }
     bot.telegram.sendMessage(config.channel_id, newMessage).catch((err)=>{bot.telegram.sendMessage(config.admin_id, err);});
     
