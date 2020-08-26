@@ -4,9 +4,9 @@ const { Telegraf } = require('telegraf');
 const config = require('./config.json')
 const bot = new Telegraf(config.botToken, {username: config.botName}); //сюда помещается токен, который дал botFather
 
-const startMessage = 'Добро пожаловать, Друже!\nДобавь меня в свою группу, чтобы пользователи могли упоминать меня.\n Если упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \n Так же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.';
-const helpMessage = 'Первое сообщение после /help';
+const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\n Если упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \n Так же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.';
 const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управление через JSON: /get_chats /set_chats';
+const startMessage = 'Добро пожаловать, Друже!\n'+helpMessage;
 const eventMessage = 'Пример использования:\n/event Всем привет. Завтра тестовое событие в 13-00';
 const eventMessage2 = 'Ваше событие отправлено в канал';
 const add_chatMessage = 'Отправьте /add_chat ***Название чата*$*Ссылка';
@@ -90,23 +90,25 @@ bot.command('get_chats', (ctx) => {
         });
     }
 }); // //ответ бота на команду /get_chats
-bot.command('set_chats', async (ctx) => {
+bot.command('set_chats', async function(ctx) {
     if(IsAdmin(ctx.update.message.from.username)){
         if(ctx.update.message.text.trim() == '/set_chats'){
             ctx.telegram.sendMessage(ctx.from.id, set_chatsMessage)
         }else{
             tryFile()
-            await fs.readFile(config.chat_file, (err, data) =>{
+            let readPromise = fs.readFile(config.chat_file, (err, data) =>{
                 if (err) throw err;
                 ctx.reply('Старый JSON: \n' + data);
+                fs.writeFile(config.chat_file, ctx.update.message.text.replace('/set_chats','').trim(),(err) => {
+                    bot.telegram.sendMessage(config.admin_id, err);
+                  });
+                fs.readFile(config.chat_file, (err, data) =>{
+                    if (err) throw err;
+                    ctx.reply('Новый JSON: \n' + data);
+                });
             });
-            fs.writeFile(config.chat_file, ctx.update.message.text.replace('/set_chats','').trim(),(err) => {
-                bot.telegram.sendMessage(config.admin_id, err);
-              });
-            fs.readFile(config.chat_file, (err, data) =>{
-                if (err) throw err;
-                ctx.reply('Новый JSON: \n' + data);
-            });
+            
+
         }
     }
 }); // //ответ бота на команду /set_chats
@@ -120,7 +122,7 @@ bot.command('add_chat', (ctx) => {
                 if (err) throw err;
                 let json = JSON.parse(data);
                 let chat = ctx.update.message.text.replace('/add_chat ***','');
-                if('*$*' in chat && !chat.startsWith(' ')){
+                if(chat.includes('*$*') && !chat.startsWith(' ')){
                     json[chat.split('*$*')[0]] = chat.split('*$*')[1];
                     fs.writeFile(config.chat_file, JSON.stringify(json),(err) => {
                         bot.telegram.sendMessage(config.admin_id, err);
