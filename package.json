@@ -1,0 +1,28 @@
+{
+  "name": "postfzcommunitybot",
+  "version": "1.0.0",
+  "description": "Yet another bot for community",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zerginwan/postfzcommunitybot.git"
+  },
+  "keywords": [
+    "tg",
+    "telegram",
+    "bot",
+    "fz"
+  ],
+  "author": "Zerginwan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Zerginwan/postfzcommunitybot/issues"
+  },
+  "homepage": "https://github.com/Zerginwan/postfzcommunitybot#readme",
+  "dependencies": {
+    "telegraf": "^3.38.0"
+  }
+}
