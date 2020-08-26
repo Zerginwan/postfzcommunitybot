@@ -10,6 +10,7 @@ const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управл
 const eventMessage = 'Пример использования:\n/event Всем привет. Завтра тестовое событие в 13-00';
 const eventMessage2 = 'Ваше событие отправлено в канал';
 const add_chatMessage = 'Отправьте /add_chat ***Название чата*$*Ссылка';
+const set_chatsMessage = 'Отправьте /set_chats {"Название чата1":"ссылка на чат1","Название чата2":"Ссылка на чат 2"}';
 
 function tryFile() {
         if (fs.existsSync(config.chat_file)) {
@@ -91,6 +92,9 @@ bot.command('get_chats', (ctx) => {
 }); // //ответ бота на команду /get_chats
 bot.command('set_chats', async (ctx) => {
     if(IsAdmin(ctx.update.message.from.username)){
+        if(ctx.update.message.text.trim() == '/set_chats'){
+            ctx.telegram.sendMessage(ctx.from.id, set_chatsMessage)
+        }else{
         tryFile()
         await fs.readFile(config.chat_file, (err, data) =>{
             if (err) throw err;
@@ -101,6 +105,7 @@ bot.command('set_chats', async (ctx) => {
             if (err) throw err;
             ctx.reply('Новый JSON: \n' + data);
         });
+    }
     }
 }); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
