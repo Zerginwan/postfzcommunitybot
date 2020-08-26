@@ -95,17 +95,17 @@ bot.command('set_chats', async (ctx) => {
         if(ctx.update.message.text.trim() == '/set_chats'){
             ctx.telegram.sendMessage(ctx.from.id, set_chatsMessage)
         }else{
-        tryFile()
-        await fs.readFile(config.chat_file, (err, data) =>{
-            if (err) throw err;
-            ctx.reply('Старый JSON: \n' + data);
-        });
-        fs.writeFile(config.chat_file, ctx.update.message.text);
-        fs.readFile(config.chat_file, (err, data) =>{
-            if (err) throw err;
-            ctx.reply('Новый JSON: \n' + data);
-        });
-    }
+            tryFile()
+            await fs.readFile(config.chat_file, (err, data) =>{
+                if (err) throw err;
+                ctx.reply('Старый JSON: \n' + data);
+            });
+            fs.writeFile(config.chat_file, ctx.update.message.text);
+            fs.readFile(config.chat_file, (err, data) =>{
+                if (err) throw err;
+                ctx.reply('Новый JSON: \n' + data);
+            });
+        }
     }
 }); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
