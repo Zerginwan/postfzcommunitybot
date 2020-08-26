@@ -70,6 +70,7 @@ bot.help((ctx) => {
 }); //ответ бота на команду /help
 
 bot.command('event', (ctx) => {
+    if(ctx.update.message.chat.type == 'private'){
     if(!ctx.update.message.from.is_bot){
         if(ctx.update.message.text.trim() == '/event'){
             ctx.reply(eventMessage)
@@ -79,6 +80,7 @@ bot.command('event', (ctx) => {
             ctx.reply(eventMessage2)
         }
     }
+}
 }); // //ответ бота на команду /event
 
 bot.command('get_chats', (ctx) => {
