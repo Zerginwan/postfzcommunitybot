@@ -62,13 +62,17 @@ async function SendEventMessage(message){
 
 }
 
-bot.start((ctx) => ctx.reply(startMessage)); //ответ бота на команду /start
+bot.start((ctx) => {
+    if(ctx.update.message.chat.type == 'private'){
+        ctx.reply(startMessage)
+    }}); //ответ бота на команду /start
 bot.help((ctx) => {
+    if(ctx.update.message.chat.type == 'private'){
     ctx.reply(helpMessage);
     if(IsAdmin(ctx.update.message.from.username)){
         ctx.telegram.sendMessage(ctx.from.id, helpMessageForAdmins)
     }
-}); //ответ бота на команду /help
+}}); //ответ бота на команду /help
 
 bot.command('event', (ctx) => {
     if(ctx.update.message.chat.type == 'private'){
@@ -94,6 +98,7 @@ bot.command('get_chats', (ctx) => {
     }
 }); // //ответ бота на команду /get_chats
 bot.command('set_chats', async function(ctx) {
+    if(ctx.update.message.chat.type == 'private'){
     if(IsAdmin(ctx.update.message.from.username)){
         if(ctx.update.message.text.trim() == '/set_chats'){
             ctx.telegram.sendMessage(ctx.from.id, set_chatsMessage)
@@ -114,7 +119,7 @@ bot.command('set_chats', async function(ctx) {
 
         }
     }
-}); // //ответ бота на команду /set_chats
+}}); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
     if(IsAdmin(ctx.update.message.from.username)){
         if(ctx.update.message.text == '/add_chat'){
