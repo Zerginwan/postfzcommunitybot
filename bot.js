@@ -68,7 +68,6 @@ bot.help((ctx) => {
 }); //ответ бота на команду /help
 
 bot.command('event', (ctx) => {
-    console.log(ctx.update.message);
     if(!ctx.update.message.from.is_bot){
         if(ctx.update.message.text.trim() == '/event'){
             ctx.reply(eventMessage)
@@ -127,7 +126,6 @@ bot.command('add_chat', (ctx) => {
 }); // //ответ бота на команду /add_chat
 
 bot.mention(config.botName, (ctx) => {
-    console.log(ctx.update.message);
     //Обрабатываем упоминания бота только от людей в групповых чатах
     if((ctx.update.message.chat.type == 'group' || ctx.update.message.chat.type == 'supergroup') && !ctx.update.message.from.is_bot){
         //если это реплай на сообщение - ищем сообщение
@@ -147,6 +145,5 @@ bot.mention(config.botName, (ctx) => {
     }
 });
 
-bot.on('channel_post',(ctx)=>console.log(ctx));
 
 bot.launch();
