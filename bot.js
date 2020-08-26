@@ -100,7 +100,9 @@ bot.command('set_chats', async (ctx) => {
                 if (err) throw err;
                 ctx.reply('Старый JSON: \n' + data);
             });
-            fs.writeFile(config.chat_file, ctx.update.message.text.replace('/set_chats','').trim());
+            fs.writeFile(config.chat_file, ctx.update.message.text.replace('/set_chats','').trim(),(err) => {
+                bot.telegram.sendMessage(config.admin_id, err);
+              });
             fs.readFile(config.chat_file, (err, data) =>{
                 if (err) throw err;
                 ctx.reply('Новый JSON: \n' + data);
@@ -120,7 +122,9 @@ bot.command('add_chat', (ctx) => {
                 let chat = ctx.update.message.text.replace('/add_chat ***','');
                 if('*$*' in chat && !chat.startsWith(' ')){
                     json[chat.split('*$*')[0]] = chat.split('*$*')[1];
-                    fs.writeFile(config.chat_file, JSON.stringify(json));
+                    fs.writeFile(config.chat_file, JSON.stringify(json),(err) => {
+                        bot.telegram.sendMessage(config.admin_id, err);
+                      });
                     ctx.telegram.sendMessage(ctx.from.id, `Добавлена ссылка на чат ${chat.split('*$*')[0]}
                     ${chat.split('*$*')[1]}`);
                 }else{
