@@ -35,12 +35,13 @@ function GetChatURL(title){
    
 }
 function IsAdmin(username){
+    let isIt = false
     config.admins.forEach(admin => {
-        if(username == admin){
-            return true;
+        if(username.trim() == admin.trim()){
+            isIt = true;
         }
     });
-    return false;
+    return isIt;
 }
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
