@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { Telegraf } = require('telegraf');
 const config = require('./config.json')
-const bot = new Telegraf(config.botToken, {username: config.botName}); //сюда помещается токен, который дал botFather
+const bot = new Telegraf(config.botToken, {username: config.botName}); 
 
 const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.';
 const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управление через JSON: /get_chats /set_chats';
@@ -35,15 +35,7 @@ function GetChatURL(title){
     });
    
 }
-function IsAdmin(username){
-    let isIt = false
-    config.admins.forEach(admin => {
-        if(username.trim() == admin.trim()){
-            isIt = true;
-        }
-    });
-    return isIt;
-}
+
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
@@ -55,7 +47,8 @@ async function SendEventMessage(message){
         if(link){
             newMessage +='Ссылка на чат:\n'+ link + '\n';
         }
-        newMessage += 'Источник: https://t.me/c/' + (message.chat.id +1000000000000).toString().slice(1) +'/'+message.message_id;
+        newMessage += 'Источник: https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id;
+        
     }
     bot.telegram.sendMessage(config.channel_id, newMessage).catch((err)=>{bot.telegram.sendMessage(config.admin_id, err);});
 }
@@ -69,7 +62,7 @@ bot.start((ctx) => {
 bot.help((ctx) => {
     if(ctx.update.message.chat.type == 'private'){
     ctx.reply(helpMessage);
-    if(IsAdmin(ctx.update.message.from.username)){
+    if(config.admins.includes(ctx.update.message.from.username)){
         ctx.telegram.sendMessage(ctx.from.id, helpMessageForAdmins)
     }
 }}); //ответ бота на команду /help
@@ -89,7 +82,7 @@ bot.command('event', (ctx) => {
 }); // //ответ бота на команду /event
 
 bot.command('get_chats', (ctx) => {
-    if(IsAdmin(ctx.update.message.from.username)){
+    if(config.admins.includes(ctx.update.message.from.username)){
         tryFile();
         fs.readFile(config.chat_file, (err, data) =>{
             if (err) throw err;
@@ -99,7 +92,7 @@ bot.command('get_chats', (ctx) => {
 }); // //ответ бота на команду /get_chats
 bot.command('set_chats', async function(ctx) {
     if(ctx.update.message.chat.type == 'private'){
-    if(IsAdmin(ctx.update.message.from.username)){
+    if(config.admins.includes(ctx.update.message.from.username)){
         if(ctx.update.message.text.trim() == '/set_chats'){
             ctx.telegram.sendMessage(ctx.from.id, set_chatsMessage)
         }else{
@@ -121,7 +114,7 @@ bot.command('set_chats', async function(ctx) {
     }
 }}); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
-    if(IsAdmin(ctx.update.message.from.username)){
+    if(config.admins.includes(ctx.update.message.from.username)){
         if(ctx.update.message.text == '/add_chat'){
             ctx.telegram.sendMessage(ctx.from.id, add_chatMessage)
         }else{
@@ -164,6 +157,5 @@ bot.mention(config.botName, (ctx) => {
         }
     }
 });
-
 
 bot.launch();
