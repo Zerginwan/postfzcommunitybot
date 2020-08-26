@@ -1,0 +1,9 @@
+{
+    //Не забудьте стереть кооментарии!!!
+    "botName":"PostFzCommunityBot", //имя бота, под которым зарегался у BotFather
+    "botToken":"",  // TG API token
+    "chat_file":"chat_links.json", //файл со списком чатов и ссылками на вход в них. Обновляется админами
+    "channel_id": -1001429386280, //id канала. Сюда сыпятся ивенты
+    "admin_id": 169048560, //id админа. сюда сыпятся логи
+    "admins":["Zerginwan", "MrModest"]
+}

@@ -1,16 +1,7 @@
 'use strict';
 const fs = require('fs');
 const { Telegraf } = require('telegraf');
-const config = {
-    "botName":"PostFzCommunityBot", //имя бота, под которым зарегался у BotFather
-    "botToken":"",  // TG API token
-    "chat_file":"chat_links.json", //файл со списком чатов и ссылками на вход в них. Обновляется админами
-    "channel_id": 1429386280, //id канала. Сюда сыпятся ивенты
-    "admin_id": 169048560, //id админа. сюда сыпятся логи
-    "admins":["Zerginwan", "MrModest"]
-}
-
-
+const config = require('./config.json')
 const bot = new Telegraf(config.botToken, {username: config.botName}); //сюда помещается токен, который дал botFather
 
 const startMessage = 'Добро пожаловать, Друже!\nДобавь меня в свою группу, чтобы пользователи могли упоминать меня.\n Если упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \n Так же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.';
@@ -54,7 +45,7 @@ async function SendEventMessage(message){
         if(link){
             newMessage +='Ссылка на чат:\n'+ link + '\n';
         }
-        newMessage += '[Источник](https://t.me/c/' + (message.chat.id +1000000000000) +'/'+message.message_id+')';
+        newMessage += 'Источник: https://t.me/c/' + (message.chat.id +1000000000000).toString().slice(1) +'/'+message.message_id;
     }
     bot.telegram.sendMessage(config.channel_id, newMessage).catch((err)=>{bot.telegram.sendMessage(config.admin_id, err);});
     

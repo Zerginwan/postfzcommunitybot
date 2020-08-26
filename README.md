@@ -28,10 +28,11 @@ EOF
 
 systemctl daemon-reload
 systemctl enable pfzc-bot.service
+cp ./config.json.example ./config.json
+nano ./config.json
+```  
+Убрать все комментарии, добавить токен, изменить ID чатов. После запустить:  
+```
 systemctl start pfzc-bot.service
 systemctl status pfzc-bot.service
-```  
-После - зайти в bot.js и установить верную конфигурацию (admin_id, TG-token, etc.), после чего  
-```  
-service pfzc-bot restart
 ```
