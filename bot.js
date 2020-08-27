@@ -194,7 +194,7 @@ bot.action('like',async (ctx) =>{
     let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
     let likes = 0;
     if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2)){
-        likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
+        likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2) == 'NaN' ?0:ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
     }
     let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
     if(num){
