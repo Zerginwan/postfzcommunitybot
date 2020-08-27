@@ -56,7 +56,7 @@ async function SendEventMessage(message){
     }
     
     bot.telegram
-        .sendMessage(config.channel_id, newMessage, Extra.markdown().markup((m) =>
+        .sendMessage(config.channel_id, newMessage, Extra.markdown().webPreview(false).markup((m) =>
         m.inlineKeyboard([
           m.callbackButton('❌ Спам!', 'report'),
           m.callbackButton('🧡', 'like'),
