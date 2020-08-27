@@ -179,13 +179,24 @@ bot.action('report', (ctx)=>{
     config.moderators.forEach((moderator_id) => {
         bot.telegram.sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.replace('_','\_')+' посчитал [это сообщение](https://t.me/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
     });
+    let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
+    let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+    ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [
+                Markup.callbackButton(`❤️${likes}`, 'like'),
+                Markup.callbackButton(`🏃${joins}`, 'join'),
+            ]
+        ]
+    });
 })
 bot.action('like',async (ctx) =>{
+    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
     let likes = 0;
-    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2)){
-        likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
+    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2)){
+        likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
     }
-    let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+    let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
     
     ctx.editMessageReplyMarkup({
         inline_keyboard: [
@@ -198,12 +209,12 @@ bot.action('like',async (ctx) =>{
     });
 })
 bot.action('join',async (ctx) =>{
-
+    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
     let joins = 0;
-    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2)){
-        joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2)){
+        joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
     }
-    let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
+    let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
     ctx.editMessageReplyMarkup({
         inline_keyboard: [
             [
