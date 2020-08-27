@@ -29,7 +29,7 @@ function GetChatURL(title){
     fs.readFile(config.chat_file, (err, data) =>{
         if (err) throw err;
         let chats = JSON.parse(data);
-        if(chats[title]){
+        if(Object.keys(chats).includes(title)){
             return chats[title];
         }else{
             return;
