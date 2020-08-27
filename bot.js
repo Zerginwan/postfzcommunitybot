@@ -42,13 +42,13 @@ function GetChatURL(title){
 async function SendEventMessage(message){
     if(message.text != ''){
     let newMessage = message.text +'\n\n- @';
-    newMessage += message.from.username;
+    newMessage += message.from.username.replace('_','\_');
     if(message.chat.type != 'private'){
         let link = GetChatURL(message.chat.title);
         if(link){
-            newMessage += ' из [' + message.chat.title +']('+link+')\n';
+            newMessage += ' из [' + message.chat.title.replace('_','\_') +']('+link+')\n';
         }else{
-            newMessage += ' из "' + message.chat.title +'"\n';
+            newMessage += ' из "' + message.chat.title.replace('_','\_') +'"\n';
         }
         newMessage += '- [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
 
