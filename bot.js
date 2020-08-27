@@ -197,16 +197,26 @@ bot.action('like',async (ctx) =>{
         likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
     }
     let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
-    
-    ctx.editMessageReplyMarkup({
-        inline_keyboard: [
-            [
-                Markup.callbackButton('❌ Спам!', 'report'),
-                Markup.callbackButton(`❤️${parseInt(likes) + 1}`, 'like'),
-                Markup.callbackButton(`🏃${joins}`, 'join'),
+    if(num){
+        ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.callbackButton('❌ Спам!', 'report'),
+                    Markup.callbackButton(`❤️${parseInt(likes) + 1}`, 'like'),
+                    Markup.callbackButton(`🏃${joins}`, 'join'),
+                ]
             ]
-        ]
-    });
+        });
+    }else{
+        ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.callbackButton(`❤️${parseInt(likes) + 1}`, 'like'),
+                    Markup.callbackButton(`🏃${joins}`, 'join'),
+                ]
+            ]
+        });
+    }
 })
 bot.action('join',async (ctx) =>{
     let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
@@ -215,15 +225,26 @@ bot.action('join',async (ctx) =>{
         joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
     }
     let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
-    ctx.editMessageReplyMarkup({
-        inline_keyboard: [
-            [
-                Markup.callbackButton('❌ Спам!', 'report'),
-                Markup.callbackButton(`❤️${likes}`, 'like'),
-                Markup.callbackButton(`🏃${parseInt(joins) + 1}`, 'join'),
+    if(num){
+        ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.callbackButton('❌ Спам!', 'report'),
+                    Markup.callbackButton(`❤️${likes}`, 'like'),
+                    Markup.callbackButton(`🏃${parseInt(joins) + 1}`, 'join'),
+                ]
             ]
-        ]
-    });
+        });
+    }else{
+        ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    Markup.callbackButton(`❤️${likes}`, 'like'),
+                    Markup.callbackButton(`🏃${parseInt(joins) + 1}`, 'join'),
+                ]
+            ]
+        });
+    }
 })
 
 bot.launch();
