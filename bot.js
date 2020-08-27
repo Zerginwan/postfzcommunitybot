@@ -41,7 +41,7 @@ function GetChatURL(title){
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
-    let newMessage = message.text +'\n\n- @';
+    let newMessage = message.text.replace('_','\_') +'\n\n- @';
     newMessage += message.from.username.replace('_','\_');
     if(message.chat.type != 'private'){
         let link = GetChatURL(message.chat.title);
