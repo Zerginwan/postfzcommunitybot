@@ -174,7 +174,7 @@ bot.mention(config.botName, (ctx) => {
 
 bot.command('show_my_id',(ctx)=>{
     
-      ctx.reply(ctx.update.message.from.id);
+      ctx.reply(ctx.update.message.chat.id);
 })
 bot.action('report', (ctx)=>{
     config.moderators.forEach((moderator_id) => {
