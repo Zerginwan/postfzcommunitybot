@@ -41,16 +41,16 @@ function GetChatURL(title){
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
-    let newMessage = message.text.replace('_','\\_') +'\n\n- @';
+    let newMessage = message.text.replace('_','\\_') +'\n\n - @';
     newMessage += message.from.username.replace('_','\\_');
     if(message.chat.type != 'private'){
         let link = GetChatURL(message.chat.title);
         if(link){
             newMessage += ' из [' + message.chat.title.replace('_','\\_') +']('+link+')\n';
         }else{
-            newMessage += ' из "' + message.chat.title.replace('_','\\_') +'"\n';
+            newMessage += ' из «' + message.chat.title.replace('_','\\_') +'»\n';
         }
-        newMessage += '- [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
+        newMessage += ' - [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
 
     }
     
