@@ -173,7 +173,7 @@ bot.mention(config.botName, (ctx) => {
 
 bot.command('show_my_id',(ctx)=>{
     
-      bot.telegram.sendMessage(config.admin_id, ctx.update.message.from.id);
+      ctx.reply(ctx.update.message.from.id);
 })
 bot.action('report', (ctx)=>{
     config.moderators.forEach((moderator_id) => {
