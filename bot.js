@@ -41,14 +41,14 @@ function GetChatURL(title){
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
-    let newMessage = message.text +'\n\nАвтор: @';
+    let newMessage = message.text +'\n\n- @';
     newMessage += message.from.username;
     if(message.chat.type != 'private'){
         let link = GetChatURL(message.chat.title);
         if(link){
-            newMessage += '\nПришло из [' + message.chat.title +']('+link+')\n';
+            newMessage += ' из [' + message.chat.title +']('+link+')\n';
         }else{
-            newMessage += '\nПришло из "' + message.chat.title +'"\n';
+            newMessage += ' из "' + message.chat.title +'"\n';
         }
         newMessage += '- [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
 
