@@ -1,11 +1,13 @@
 'use strict';
 const fs = require('fs');
 const { Telegraf } = require('telegraf');
+const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup')
 const config = require('./config.json')
 const bot = new Telegraf(config.botToken, {username: config.botName}); 
 
 const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.';
-const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управление через JSON: /get_chats /set_chats';
+const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управление через JSON: /get_chats /set_chats\n/show_my_id';
 const startMessage = 'Добро пожаловать, Друже!\n'+helpMessage;
 const eventMessage = 'Пример использования:\n/event Всем привет. Завтра тестовое событие в 13-00';
 const eventMessage2 = 'Ваше событие отправлено в канал';
@@ -39,18 +41,29 @@ function GetChatURL(title){
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
-    let newMessage = message.text +'\n\n Автор: @';
+    let newMessage = message.text +'\n\nАвтор: @';
     newMessage += message.from.username;
     if(message.chat.type != 'private'){
-        newMessage += '\n Пришло из "' + message.chat.title +'"\n';
-        let link = await GetChatURL(message.chat.title);
+        let link = GetChatURL(message.chat.title);
         if(link){
-            newMessage +='Ссылка на чат:\n'+ link + '\n';
+            newMessage += '\nПришло из [' + message.chat.title +']('+link+')\n';
+        }else{
+            newMessage += '\nПришло из "' + message.chat.title +'"\n';
         }
-        newMessage += 'Источник: https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id;
-        
+        newMessage += '- [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
+
     }
-    bot.telegram.sendMessage(config.channel_id, newMessage).catch((err)=>{bot.telegram.sendMessage(config.admin_id, err);});
+    
+    bot.telegram
+        .sendMessage(config.channel_id, newMessage, Extra.markdown().markup((m) =>
+        m.inlineKeyboard([
+          m.callbackButton('❌ Спам!', 'report'),
+          m.callbackButton('🧡', 'like'),
+          m.callbackButton('🏃', 'join'),
+        ])))
+        .catch((err)=>{
+            bot.telegram.sendMessage(config.admin_id, err);
+        });
 }
 
 }
@@ -63,7 +76,7 @@ bot.help((ctx) => {
     if(ctx.update.message.chat.type == 'private'){
     ctx.reply(helpMessage);
     if(config.admins.includes(ctx.update.message.from.username)){
-        ctx.telegram.sendMessage(ctx.from.id, helpMessageForAdmins)
+        ctx.reply(helpMessageForAdmins)
     }
 }}); //ответ бота на команду /help
 
@@ -157,5 +170,49 @@ bot.mention(config.botName, (ctx) => {
         }
     }
 });
+
+bot.command('show_my_id',(ctx)=>{
+    
+      bot.telegram.sendMessage(config.admin_id, ctx.update.message.from.id);
+})
+bot.action('report', (ctx)=>{
+    config.moderators.forEach((moderator_id) => {
+        bot.telegram.sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.replace('_','\_')+' посчитал [это сообщение](https://t.me/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
+    });
+})
+bot.action('like',async (ctx) =>{
+    let likes = 0;
+    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2)){
+        likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
+    }
+    let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+    
+    ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [
+                Markup.callbackButton('❌ Спам!', 'report'),
+                Markup.callbackButton(`❤️${parseInt(likes) + 1}`, 'like'),
+                Markup.callbackButton(`🏃${joins}`, 'join'),
+            ]
+        ]
+    });
+})
+bot.action('join',async (ctx) =>{
+
+    let joins = 0;
+    if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2)){
+        joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+    }
+    let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
+    ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [
+                Markup.callbackButton('❌ Спам!', 'report'),
+                Markup.callbackButton(`❤️${likes}`, 'like'),
+                Markup.callbackButton(`🏃${parseInt(joins) + 1}`, 'join'),
+            ]
+        ]
+    });
+})
 
 bot.launch();
