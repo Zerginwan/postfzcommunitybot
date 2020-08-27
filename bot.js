@@ -25,16 +25,17 @@ function tryFile() {
 
 function GetChatURL(title){
     //Взять ссылку из конфига.
+    let link = ""
     tryFile()
-    fs.readFile(config.chat_file, (err, data) =>{
-        if (err) throw err;
+    let data = fs.readFileSync(config.chat_file)
         let chats = JSON.parse(data);
+        
         if(Object.keys(chats).includes(title)){
-            return chats[title];
-        }else{
-            return;
+            link = chats[title];
         }
-    });
+        
+    
+    return link
    
 }
 
