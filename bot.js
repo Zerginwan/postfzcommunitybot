@@ -179,13 +179,15 @@ bot.command('show_my_id',(ctx)=>{
 bot.action('report', (ctx)=>{
     config.moderators.forEach((moderator_id) => {
         bot.telegram
-            .sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.replace('_','\_')+' посчитал [это сообщение](https://t.me/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
+            .sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.replace('_','\\_')+' посчитал [это сообщение](https://t.me/c/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
             .catch((err)=>{
                 bot.telegram.sendMessage(config.admin_id, err);
             });
     });
     let likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.slice(2);
     let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][2].text.slice(2);
+	if(!likes) likes = "";
+	if(!joins) joins = "";
     ctx.editMessageReplyMarkup({
         inline_keyboard: [
             [
