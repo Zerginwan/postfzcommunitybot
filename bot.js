@@ -42,14 +42,14 @@ function GetChatURL(title){
 // Взять сообщение, выжать из него все соки, переформатировать, отправить в канал
 async function SendEventMessage(message){
     if(message.text != ''){
-    let newMessage = message.text.replace('_','\\_') +'\n\n - @';
-    newMessage += message.from.username.replace('_','\\_');
+    let newMessage = message.text.split('_').join('\\_') +'\n\n - @';
+    newMessage += message.from.username.split('_').join('\\_');
     if(message.chat.type != 'private'){
         let link = GetChatURL(message.chat.title);
         if(link){
-            newMessage += ' из [' + message.chat.title.replace('_','\\_') +']('+link+')\n';
+            newMessage += ' из [' + message.chat.title.split('_').join('\\_') +']('+link+')\n';
         }else{
-            newMessage += ' из «' + message.chat.title.replace('_','\\_') +'»\n';
+            newMessage += ' из «' + message.chat.title.split('_').join('\\_') +'»\n';
         }
         newMessage += ' - [Источник](https://t.me/c/' + message.chat.id.toString().slice(4) +'/'+message.message_id+')';
 
@@ -179,7 +179,7 @@ bot.command('show_my_id',(ctx)=>{
 bot.action('report', (ctx)=>{
     config.moderators.forEach((moderator_id) => {
         bot.telegram
-            .sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.replace('_','\\_')+' посчитал [это сообщение](https://t.me/c/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
+            .sendMessage(moderator_id, 'Пользователь @'+ctx.update.callback_query.from.username.split('_').join('\\_')+' посчитал [это сообщение](https://t.me/c/'+config.channel_id.toString().slice(4) +'/'+ ctx.update.callback_query.message.message_id + ') спамом',Extra.markdown())
             .catch((err)=>{
                 bot.telegram.sendMessage(config.admin_id, err);
             });
@@ -198,12 +198,16 @@ bot.action('report', (ctx)=>{
     });
 })
 bot.action('like',async (ctx) =>{
-    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
+    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][0].text.startsWith('❌')?1:0;
     let likes = 0;
     if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2)){
         likes = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][num].text.slice(2);
     }
     let joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
+    console.log(num)
+    console.log(parseInt(num) + 1)
+    console.log(ctx.update.callback_query.message.reply_markup.inline_keyboard[0])
+    console.log(likes)
     if(num){
         ctx.editMessageReplyMarkup({
             inline_keyboard: [
@@ -226,7 +230,7 @@ bot.action('like',async (ctx) =>{
     }
 })
 bot.action('join',async (ctx) =>{
-    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][1].text.startsWith('❌')?1:0;
+    let num = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][0].text.startsWith('❌')?1:0;
     let joins = 0;
     if(ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2)){
         joins = ctx.update.callback_query.message.reply_markup.inline_keyboard[0][parseInt(num) + 1].text.slice(2);
@@ -253,10 +257,11 @@ bot.action('join',async (ctx) =>{
         });
     }
 })
+
 bot.command('test',(ctx)=>{
     
     bot.telegram
-        .sendMessage(config.admin_id, 'Тест_на_все'.replace('_','\\_'), Extra.markdown().webPreview(false).markup((m) =>
+        .sendMessage(config.admin_id, 'Тест_на_все'.split('_').join('\\_'), Extra.markdown().webPreview(false).markup((m) =>
             m.inlineKeyboard([
                 m.callbackButton('❌ Спам!', 'report'),
                 m.callbackButton('🧡', 'like'),
