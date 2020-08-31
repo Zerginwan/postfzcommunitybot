@@ -6,8 +6,8 @@ const Markup = require('telegraf/markup')
 const config = require('./config.json')
 const bot = new Telegraf(config.botToken, {username: config.botName}); 
 
-const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.';
-const helpMessageForAdmins = 'Добавить чат: /add_chat \n Управление через JSON: /get_chats /set_chats\n/show_my_id';
+const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.\nДобавить ссылку на чат: /add_chat\n';
+const helpMessageForAdmins = 'Управление через JSON: /get_chats /set_chats\n/show_my_id';
 const startMessage = 'Добро пожаловать, Друже!\n'+helpMessage;
 const eventMessage = 'Пример использования:\n/event Всем привет. Завтра тестовое событие в 13-00';
 const eventMessage2 = 'Ваше событие отправлено в канал';
@@ -128,7 +128,7 @@ bot.command('set_chats', async function(ctx) {
     }
 }}); // //ответ бота на команду /set_chats
 bot.command('add_chat', (ctx) => {
-    if(config.admins.includes(ctx.update.message.from.username)){
+    // if(config.admins.includes(ctx.update.message.from.username)){
         if(ctx.update.message.text == '/add_chat'){
             ctx.telegram.sendMessage(ctx.from.id, add_chatMessage)
         }else{
@@ -149,7 +149,7 @@ bot.command('add_chat', (ctx) => {
                 }
             });
         }
-    }
+    // }
 }); // //ответ бота на команду /add_chat
 
 bot.mention(config.botName, (ctx) => {
