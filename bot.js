@@ -4,7 +4,7 @@ const { Telegraf } = require('telegraf');
 const { markdown } = require('telegraf/extra');
 const { callbackButton } = require('telegraf/markup');
 const { botToken, botName, chat_file, channel_id, admin_id, admins, moderators } = require('./config.json');
-const { isAdmin, isPrivateMessage, logToAdmin, getLikeButton, getJoinButton, hasSpamButton } = require('./helpers');
+const { isAdmin, isPrivateMessage, isGroupChat, logToAdmin, getLikeButton, getJoinButton, hasSpamButton } = require('./helpers');
 const bot = new Telegraf(botToken, {username: botName}); 
 
 const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.\nДобавить ссылку на чат: /add_chat\n';
@@ -66,20 +66,22 @@ async function SendEventMessage(message){
                 m.callbackButton('🏃', 'join'),
             ])
         ))
-        .catch(err => 
-            bot.telegram.sendMessage(admin_id, err));
+        .catch(logToAdmin(bot));
 }
 
 bot.start((ctx) => {
     if(isPrivateMessage(ctx)) {
         ctx.reply(startMessage)
+            .catch(logToAdmin(bot));
     }}); //ответ бота на команду /start
 
 bot.help((ctx) => {
     if(isPrivateMessage(ctx)) {
-        ctx.reply(helpMessage);
+        ctx.reply(helpMessage)
+            .catch(logToAdmin(bot));
     if(admins.includes(ctx.update.message.from.username)){
         ctx.reply(helpMessageForAdmins)
+            .catch(logToAdmin(bot))
     }
 }}); //ответ бота на команду /help
 
@@ -87,10 +89,12 @@ bot.command('event', (ctx) => {
     if(isPrivateMessage(ctx) && !ctx.update.message.from.is_bot) {
         if(ctx.update.message.text.trim() == '/event') {
             ctx.reply(eventMessage)
+                .catch(logToAdmin(bot))
         } else {
             ctx.update.message.text = ctx.update.message.text.replace('/event ', '').trim()
             SendEventMessage(ctx.update.message);
             ctx.reply(eventMessage2)
+                .catch(logToAdmin(bot))
         }
     }
 }); // //ответ бота на команду /event
@@ -100,7 +104,8 @@ bot.command('get_chats', (ctx) => {
         tryFile();
         readFile(chat_file, (err, data) => {
             if (err) throw err;
-            ctx.reply('Текущий JSON: \n' + data);
+            ctx.reply('Текущий JSON: \n' + data)
+                .catch(logToAdmin(bot));
         });
     }
 }); // //ответ бота на команду /get_chats
@@ -114,7 +119,8 @@ bot.command('set_chats', async function(ctx) {
             readFile(chat_file, (err, data) => {
                 if (err) throw err;
 
-                ctx.reply('Старый JSON: \n' + data);
+                ctx.reply('Старый JSON: \n' + data)
+                    .catch(logToAdmin(bot));
 
                 writeFile(
                     chat_file, 
@@ -124,7 +130,8 @@ bot.command('set_chats', async function(ctx) {
                 readFile(chat_file, (err, data) => {
                     if (err) throw err;
 
-                    ctx.reply('Новый JSON: \n' + data);
+                    ctx.reply('Новый JSON: \n' + data)
+                        .catch(logToAdmin(bot));
                 });
             });
         }
@@ -146,10 +153,13 @@ bot.command('add_chat', (ctx) => {
                     writeFile(chat_file, JSON.stringify(json),(err) => {
                         bot.telegram.sendMessage(admin_id, err);
                       });
-                    ctx.telegram.sendMessage(ctx.from.id, `Добавлена ссылка на чат ${chat.split('*$*')[0]}
-                    ${chat.split('*$*')[1]}`);
+                    ctx.telegram
+                        .sendMessage(ctx.from.id, `Добавлена ссылка на чат ${chat.split('*$*')[0]}
+                    ${chat.split('*$*')[1]}`)
+                        .catch(logToAdmin(bot));
                 }else{
-                    ctx.reply('Неверный формат.\n' + add_chatMessage);
+                    ctx.reply('Неверный формат.\n' + add_chatMessage)
+                        .catch(logToAdmin(bot));
                 }
             });
         }
@@ -177,7 +187,8 @@ bot.mention(botName, (ctx) => {
 });
 
 bot.command('show_my_id',ctx => { 
-    ctx.reply(ctx.update.message.chat.id);
+    ctx.reply(ctx.update.message.chat.id)
+        .catch(logToAdmin(bot));
 });
 
 bot.action('report', ctx => {
