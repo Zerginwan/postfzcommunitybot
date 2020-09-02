@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Zerginwan/postfzcommunitybot#readme",
   "dependencies": {
+    "sqlite3": "^5.0.0",
     "telegraf": "^3.38.0"
   }
 }

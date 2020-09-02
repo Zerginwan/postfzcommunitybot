@@ -4,7 +4,7 @@ const { Telegraf } = require('telegraf');
 const { markdown } = require('telegraf/extra');
 const { callbackButton } = require('telegraf/markup');
 const { botToken, botName, chat_file, channel_id, admin_id, admins, moderators } = require('./config.json');
-const { isAdmin, isPrivateMessage, isGroupChat, logToAdmin, getLikeButton, getJoinButton, hasSpamButton } = require('./helpers');
+const { isAdmin, isPrivateMessage, isGroupChat, logToAdmin, getLikeButton, getJoinButton, hasSpamButton, getSpamReporters, setSpamReporter } = require('./helpers');
 const bot = new Telegraf(botToken, {username: botName}); 
 
 const helpMessage = 'Добавь меня в свою группу, чтобы пользователи могли упоминать меня.\nЕсли упомянуть меня в начале или конце сообщения, я отправлю пост в "Секретные Движухи". \nТак же можно уопмянуть меня в ответе на сообщение. Тогда я обработаю сообщение.\nОтправь /event *Описание события*, чтобы запостить что-то сразу в канал.\nДобавить ссылку на чат: /add_chat\n';
@@ -192,26 +192,40 @@ bot.command('show_my_id',ctx => {
 });
 
 bot.action('report', ctx => {
-    moderators.forEach(moderator_id => {
-        bot.telegram
-            .sendMessage(moderator_id, `Пользователь @${ctx.update.callback_query.from.username.split('_').join('\\_')} посчитал [это сообщение](https://t.me/c/${channel_id.toString().slice(4)}/${ctx.update.callback_query.message.message_id}) спамом`, markdown())
-            .catch(logToAdmin(bot));
-    });
-    let likes = getLikeButton(ctx).text.slice(2);
-    let joins = getJoinButton(ctx).text.slice(2);
-	if(!likes) likes = "";
-	if(!joins) joins = "";
-    ctx.editMessageReplyMarkup({
-        inline_keyboard: [
-            [
-                callbackButton(`❤️${likes}`, 'like'),
-                callbackButton(`🏃${joins}`, 'join'),
+    let message_id = ctx.update.callback_query.message.message_id
+    let username = ctx.update.callback_query.from.username
+    let spamReporters = getSpamReporters(message_id)
+    let oldReportersCount = spamReporters.length
+    spamReporters.push(username)
+    //берем только уникальные значения
+    let uniqueReporters = [...new Set(spamReporters)]
+    if(oldReportersCount < uniqueReporters.length){
+        setSpamReporter(message_id, username)
+    }
+    if(uniqueReporters.length > 9){
+
+        moderators.forEach(moderator_id => {
+            bot.telegram
+                .sendMessage(moderator_id, `Пользователь @${ctx.update.callback_query.from.username.split('_').join('\\_')} посчитал [это сообщение](https://t.me/c/${channel_id.toString().slice(4)}/${ctx.update.callback_query.message.message_id}) спамом наряду с другими 9 пользователями`, markdown())
+                .catch(logToAdmin(bot));
+        });
+        let likes = getLikeButton(ctx).text.slice(2);
+        let joins = getJoinButton(ctx).text.slice(2);
+	    if(!likes) likes = "";
+	    if(!joins) joins = "";
+        ctx.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    callbackButton(`❤️${likes}`, 'like'),
+                    callbackButton(`🏃${joins}`, 'join'),
+                ]
             ]
-        ]
-    });
+        });
+    }
 });
 
 bot.action('like', async ctx => {
+    console.log(ctx)
     let likes = getLikeButton(ctx).text.slice(2) || 0;
     let joins = getJoinButton(ctx).text.slice(2);
 
