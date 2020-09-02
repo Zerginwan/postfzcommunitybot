@@ -24,31 +24,32 @@ module.exports.logToAdmin = function(bot) {
   return err => bot.telegram.sendMessage(admin_id, err);
 }
 
+module.exports.getButtonOnPosition = function(ctx, position) {
+  return ctx.update.callback_query.message.reply_markup.inline_keyboard[0][position];
+}
+
 module.exports.hasSpamButton = function(ctx) {
   return ctx.update.callback_query.message.reply_markup.inline_keyboard[0][0].text.startsWith('❌');
 }
 
 module.exports.getSpamButton = function(ctx) {
   return module.exports.hasSpamButton(ctx)
-    ? getButtonOnPosition(ctx, 0)
+    ? module.exports.getButtonOnPosition(ctx, 0)
     : null;
 }
 
 module.exports.getLikeButton = function(ctx) {
   return module.exports.hasSpamButton(ctx)
-    ? getButtonOnPosition(ctx, 1)
-    : getButtonOnPosition(ctx, 0);
+    ? module.exports.getButtonOnPosition(ctx, 1)
+    : module.exports.getButtonOnPosition(ctx, 0);
 }
 
 module.exports.getJoinButton = function(ctx) {
   return module.exports.hasSpamButton(ctx)
-    ? getButtonOnPosition(ctx, 2)
-    : getButtonOnPosition(ctx, 1);
+    ? module.exports.getButtonOnPosition(ctx, 2)
+    : module.exports.getButtonOnPosition(ctx, 1);
 }
 
-module.exports.getButtonOnPosition = function(ctx, position) {
-  return ctx.update.callback_query.message.reply_markup.inline_keyboard[0][position];
-}
 module.exports.setSpamReporter = function(message_id, username, bot) {
   let db = new Database(db_name, (err) =>{
     if (err) {

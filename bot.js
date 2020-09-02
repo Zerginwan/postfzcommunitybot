@@ -225,7 +225,6 @@ bot.action('report', ctx => {
 });
 
 bot.action('like', async ctx => {
-    console.log(ctx)
     let likes = getLikeButton(ctx).text.slice(2) || 0;
     let joins = getJoinButton(ctx).text.slice(2);
 
