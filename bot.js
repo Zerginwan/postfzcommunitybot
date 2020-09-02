@@ -194,13 +194,13 @@ bot.command('show_my_id',ctx => {
 bot.action('report', ctx => {
     let message_id = ctx.update.callback_query.message.message_id
     let username = ctx.update.callback_query.from.username
-    let spamReporters = getSpamReporters(message_id)
+    let spamReporters = getSpamReporters(message_id, bot)
     let oldReportersCount = spamReporters.length
     spamReporters.push(username)
     //берем только уникальные значения
     let uniqueReporters = [...new Set(spamReporters)]
     if(oldReportersCount < uniqueReporters.length){
-        setSpamReporter(message_id, username)
+        setSpamReporter(message_id, username, bot)
     }
     if(uniqueReporters.length > 9){
 
@@ -265,10 +265,10 @@ bot.action('join', async ctx => {
     });
 });
 
-bot.command('test', ctx => {
-    moderators.forEach(moderator_id => {
-        bot.telegram.sendMessage(moderator_id, 'Тест на спам')
-    });
+bot.command('test', (ctx) => {
+    let reporters = getSpamReporters(ctx.update.message.message_id, bot);
+    setSpamReporter(ctx.update.message.message_id, ctx.update.message.from.username, bot);
+    ctx.reply(reporters)
 });
 
 bot.launch();

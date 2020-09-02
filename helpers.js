@@ -2,13 +2,11 @@ const { botToken, botName, chat_file, channel_id, admin_id, admins, moderators, 
 const {Database} = require('sqlite3')
 
 const SQLcreate = `CREATE TABLE IF NOT EXISTS reports (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   message_id INTEGER NOT NULL,
 	reporter TEXT NOT NULL,
-	timestamp INTEGER NOT NULL,
+	timestamp INTEGER NOT NULL
 );`;
-
-function 
 
 module.exports.isAdmin = function(ctx) {
   return admins.includes(ctx.update.message.from.username);
@@ -51,20 +49,19 @@ module.exports.getJoinButton = function(ctx) {
 module.exports.getButtonOnPosition = function(ctx, position) {
   return ctx.update.callback_query.message.reply_markup.inline_keyboard[0][position];
 }
-module.exports.setSpamReporter = function(message_id, username) {
+module.exports.setSpamReporter = function(message_id, username, bot) {
   let db = new Database(db_name, (err) =>{
     if (err) {
       return bot.telegram.sendMessage(admin_id, err);
     }
   });
   //вставить имя, если его нет в базе
-  db.run(`INSERT INTO reports(message_id, reporter, timestamp) 
-  SELECT ${message_id}, '${username}', ${Date.now() / 1000} 
-  WHERE NOT EXISTS(SELECT 1 FROM reports WHERE message_id = ${message_id} AND reporter = '${reporter}');`,(err) =>{
-    if (err) {
-      return bot.telegram.sendMessage(admin_id, err);
-    }
-  })
+  db.run(`INSERT INTO reports (message_id, reporter, timestamp) VALUES (${message_id}, '${username}', ${Date.now() / 1000});`,
+      (err) =>{
+        if (err) {
+          return bot.telegram.sendMessage(admin_id, err);
+        }
+  });
 
   db.close((err) =>{
     if (err) {
@@ -75,12 +72,13 @@ module.exports.setSpamReporter = function(message_id, username) {
   return
 }
 
-module.exports.getSpamReporters = function(message_id){
+module.exports.getSpamReporters = function(message_id, bot){
   let db = new Database(db_name, (err) =>{
     if (err) {
       return bot.telegram.sendMessage(admin_id, err);
     }
   });
+
   db.run(SQLcreate,(err) =>{
     if (err) {
       return bot.telegram.sendMessage(admin_id, err);
@@ -88,15 +86,15 @@ module.exports.getSpamReporters = function(message_id){
   })
 
   let reporters = []
-  db.serialize(() => {
-    db.each(`SELECT reporter as reporter FROM reports WHERE message_id = '${message_id}'`, (err, row) => {
-      if (err) {
-        bot.telegram.sendMessage(admin_id, err);
-      }
-      reporters.push(row.reporter)
-    });
-  });
-
+   db.each(`SELECT DISTINCT(reporter) as reporter FROM reports WHERE message_id = '${message_id}'`, (err, row) => {
+     if (err) {
+       bot.telegram.sendMessage(admin_id, err);
+     }
+     if(row){
+       reporters.push(row.reporter)
+     }
+   });
+  
   db.close((err) =>{
     if (err) {
       return bot.telegram.sendMessage(admin_id, err);

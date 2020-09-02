@@ -3,6 +3,7 @@ logs
 config.json
 chat_links.json
 *.log
+*.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
