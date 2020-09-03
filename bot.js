@@ -63,7 +63,7 @@ async function SendEventMessage(message){
             m.inlineKeyboard([
                 m.callbackButton('❌ Спам!', 'report'),
                 m.callbackButton('🧡', 'like'),
-                m.callbackButton('🏃', 'join'),
+                // m.callbackButton('🏃', 'join'),
             ])
         ))
         .catch(logToAdmin(bot));
@@ -210,14 +210,14 @@ bot.action('report', ctx => {
                 .catch(logToAdmin(bot));
         });
         let likes = getLikeButton(ctx).text.slice(2);
-        let joins = getJoinButton(ctx).text.slice(2);
+        // let joins = getJoinButton(ctx).text.slice(2);
 	    if(!likes) likes = "";
-	    if(!joins) joins = "";
+	    // if(!joins) joins = "";
         ctx.editMessageReplyMarkup({
             inline_keyboard: [
                 [
                     callbackButton(`❤️${likes}`, 'like'),
-                    callbackButton(`🏃${joins}`, 'join'),
+                    // callbackButton(`🏃${joins}`, 'join'),
                 ]
             ]
         });
@@ -227,11 +227,11 @@ bot.action('report', ctx => {
 bot.action('like', async ctx => {
     console.log(ctx)
     let likes = getLikeButton(ctx).text.slice(2) || 0;
-    let joins = getJoinButton(ctx).text.slice(2);
+    // let joins = getJoinButton(ctx).text.slice(2);
 
     let callbackButtons = [
         callbackButton(`❤️${parseInt(likes) + 1}`, 'like'),
-        callbackButton(`🏃${joins}`, 'join'),
+        // callbackButton(`🏃${joins}`, 'join'),
     ];
 
     if (hasSpamButton(ctx)) {
