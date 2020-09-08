@@ -174,13 +174,13 @@ bot.mention(botName, (ctx) => {
         //если это реплай на сообщение - ищем сообщение
         if(ctx.update.message.reply_to_message) {
             //в сообщении только упоминание.
-            if(ctx.update.message.text == '@'+botName) {
+            if(ctx.update.message.text.trim().toLowerCase() == '@'+botName.toLowerCase()) {
                 SendEventMessage(ctx.update.message.reply_to_message);
             }
         } else {
         //Если это сообщение самостоятельно - обрабатываем его, 
         // если текст начинает или заканчивается упоминанием.
-            if(ctx.update.message.text.endsWith('@'+botName) || ctx.update.message.text.startsWith('@'+botName)) {
+            if(ctx.update.message.text.trim().split()[0].toLowerCase() === ('@'+botName).toLowerCase() || ctx.update.message.text.trim().split()[-1].toLowerCase() === ('@'+botName).toLowerCase()) {
                 ctx.update.message.text = ctx.update.message.text.replace('@'+botName, '').trim()
                 SendEventMessage(ctx.update.message);
             }
