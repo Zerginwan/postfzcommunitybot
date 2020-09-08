@@ -44,7 +44,7 @@ async function SendEventMessage(message){
         return;
     }
 
-    let newMessage = message.text.split('_').join('\\_') +'\n\n - @';
+    let newMessage = message.text.split('_').join('\\_') +'\n\n — @';
     newMessage += message.from.username.split('_').join('\\_');
     if(message.chat.type != 'private') {
         let link = GetChatURL(message.chat.title);
