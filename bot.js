@@ -44,8 +44,9 @@ async function SendEventMessage(message){
         return;
     }
 
-    let newMessage = message.text.split('_').join('\\_') +'\n\n — @';
-    newMessage += message.from.username.split('_').join('\\_');
+    let newMessage = message.text.split('_').join('\\_') +'\n\n — ';
+    let username = message.from.username ? '@'+message.from.username.split('_').join('\\_') : message.from.first_name.split('_').join('\\_')
+    newMessage += username;
     if(message.chat.type != 'private') {
         let link = GetChatURL(message.chat.title);
         if(link) {
@@ -194,7 +195,7 @@ bot.command('show_my_id',ctx => {
 
 bot.action('report', ctx => {
     let message_id = ctx.update.callback_query.message.message_id
-    let username = ctx.update.callback_query.from.username
+    let username = ctx.update.callback_query.from.username ? ctx.update.callback_query.from.username : ctx.update.callback_query.from.first_name
     let spamReporters = getSpamReporters(message_id, bot)
     let oldReportersCount = spamReporters.length
     spamReporters.push(username)
@@ -207,7 +208,7 @@ bot.action('report', ctx => {
 
         moderators.forEach(moderator_id => {
             bot.telegram
-                .sendMessage(moderator_id, `Пользователь @${ctx.update.callback_query.from.username.split('_').join('\\_')} посчитал [это сообщение](https://t.me/c/${channel_id.toString().slice(4)}/${ctx.update.callback_query.message.message_id}) спамом наряду с другими 9 пользователями`, markdown())
+                .sendMessage(moderator_id, `Пользователь @${username.split('_').join('\\_')} посчитал [это сообщение](https://t.me/c/${channel_id.toString().slice(4)}/${ctx.update.callback_query.message.message_id}) спамом наряду с другими 9 пользователями`, markdown())
                 .catch(logToAdmin(bot));
         });
         let likes = getLikeButton(ctx).text.slice(2);
