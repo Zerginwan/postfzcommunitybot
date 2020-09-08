@@ -12,7 +12,7 @@ const helpMessageForAdmins = 'Управление через JSON: /get_chats /
 const startMessage = 'Добро пожаловать, Друже!\n'+helpMessage;
 const eventMessage = 'Пример использования:\n/event Всем привет. Завтра тестовое событие в 13-00';
 const eventMessage2 = 'Ваше событие отправлено в канал';
-const add_chatMessage = 'Отправьте /add_chat ***Название чата*$*Ссылка';
+const add_chatMessage = 'Отправьте /add_chat\nНазвание чата\nСсылка';
 const set_chatsMessage = 'Отправьте /set_chats {"Название чата1":"ссылка на чат1","Название чата2":"Ссылка на чат 2"}';
 
 function tryFile() {
@@ -140,22 +140,23 @@ bot.command('set_chats', async function(ctx) {
 
 bot.command('add_chat', (ctx) => {
     // if(isAdmin(ctx)){
-        if(ctx.update.message.text == '/add_chat'){
+        if(ctx.update.message.text.trim() == '/add_chat'){
             ctx.telegram.sendMessage(ctx.from.id, add_chatMessage)
         } else {
             tryFile();
             readFile(chat_file, (err, data) =>{
                 if (err) throw err;
                 let json = JSON.parse(data);
-                let chat = ctx.update.message.text.replace('/add_chat ***','');
-                if(chat.includes('*$*') && !chat.startsWith(' ')){
-                    json[chat.split('*$*')[0]] = chat.split('*$*')[1];
+                let chat = ctx.update.message.text.split['\n'][1].trim();
+                let link = ctx.update.message.text.split['\n'][2].trim();
+                if(chat){
+                    json[chat] = link;
                     writeFile(chat_file, JSON.stringify(json),(err) => {
                         bot.telegram.sendMessage(admin_id, err);
                       });
                     ctx.telegram
-                        .sendMessage(ctx.from.id, `Добавлена ссылка на чат ${chat.split('*$*')[0]}
-                    ${chat.split('*$*')[1]}`)
+                        .sendMessage(ctx.from.id, `Добавлена ссылка на чат ${chat}:
+                    ${link}`)
                         .catch(logToAdmin(bot));
                 }else{
                     ctx.reply('Неверный формат.\n' + add_chatMessage)
