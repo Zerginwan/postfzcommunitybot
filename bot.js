@@ -74,7 +74,8 @@ bot.start((ctx) => {
     if(isPrivateMessage(ctx)) {
         ctx.reply(startMessage)
             .catch(logToAdmin(bot));
-    }}); //ответ бота на команду /start
+    }})
+    .catch(logToAdmin(bot));; //ответ бота на команду /start
 
 bot.help((ctx) => {
     if(isPrivateMessage(ctx)) {
@@ -84,7 +85,8 @@ bot.help((ctx) => {
         ctx.reply(helpMessageForAdmins)
             .catch(logToAdmin(bot))
     }
-}}); //ответ бота на команду /help
+}})
+.catch(logToAdmin(bot));; //ответ бота на команду /help
 
 bot.command('event', (ctx) => {
     if(isPrivateMessage(ctx) && !ctx.update.message.from.is_bot) {
@@ -98,7 +100,8 @@ bot.command('event', (ctx) => {
                 .catch(logToAdmin(bot))
         }
     }
-}); // //ответ бота на команду /event
+})
+.catch(logToAdmin(bot));; // //ответ бота на команду /event
 
 bot.command('get_chats', (ctx) => {
     if(isAdmin(ctx)) {
@@ -109,7 +112,8 @@ bot.command('get_chats', (ctx) => {
                 .catch(logToAdmin(bot));
         });
     }
-}); // //ответ бота на команду /get_chats
+})
+.catch(logToAdmin(bot));; // //ответ бота на команду /get_chats
 
 bot.command('set_chats', async function(ctx) {
     if(isPrivateMessage(ctx) && isAdmin(ctx)) {
@@ -137,7 +141,8 @@ bot.command('set_chats', async function(ctx) {
             });
         }
     }
-}); // //ответ бота на команду /set_chats
+})
+.catch(logToAdmin(bot));; // //ответ бота на команду /set_chats
 
 bot.command('add_chat', (ctx) => {
     // if(isAdmin(ctx)){
@@ -166,7 +171,8 @@ bot.command('add_chat', (ctx) => {
             });
         }
     // }
-}); // //ответ бота на команду /add_chat
+})
+.catch(logToAdmin(bot));; // //ответ бота на команду /add_chat
 
 bot.mention(botName, (ctx) => {
     //Обрабатываем упоминания бота только от людей в групповых чатах
@@ -186,12 +192,14 @@ bot.mention(botName, (ctx) => {
             }
         }
     }
-});
+})
+.catch(logToAdmin(bot));;
 
 bot.command('show_my_id',ctx => { 
     ctx.reply(ctx.update.message.chat.id)
         .catch(logToAdmin(bot));
-});
+})
+.catch(logToAdmin(bot));;
 
 bot.action('report', ctx => {
     let message_id = ctx.update.callback_query.message.message_id
@@ -244,7 +252,8 @@ bot.action('like', async ctx => {
     ctx.editMessageReplyMarkup({
         inline_keyboard: [ [ ...callbackButtons ] ]
     });
-});
+})
+.catch(logToAdmin(bot));;
 
 bot.action('join', async ctx => {
     let likes = getLikeButton(ctx).text.slice(2);
@@ -264,12 +273,14 @@ bot.action('join', async ctx => {
     ctx.editMessageReplyMarkup({
         inline_keyboard: [ [ ...callbackButtons ] ]
     });
-});
+})
+.catch(logToAdmin(bot));;
 
 bot.command('test', (ctx) => {
     let reporters = getSpamReporters(ctx.update.message.message_id, bot);
     setSpamReporter(ctx.update.message.message_id, ctx.update.message.from.username, bot);
     ctx.reply(reporters)
-});
+})
+.catch(logToAdmin(bot));;
 
 bot.launch();
