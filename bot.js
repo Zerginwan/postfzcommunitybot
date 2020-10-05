@@ -153,8 +153,8 @@ bot.command('add_chat', (ctx) => {
             readFile(chat_file, (err, data) =>{
                 if (err) throw err;
                 let json = JSON.parse(data);
-                let chat = ctx.update.message.text.split['\n'][1].trim();
-                let link = ctx.update.message.text.split['\n'][2].trim();
+                let chat = ctx.update.message.text.split('\n')[1].trim();
+                let link = ctx.update.message.text.split('\n')[2].trim();
                 if(chat){
                     json[chat] = link;
                     writeFile(chat_file, JSON.stringify(json),(err) => {
