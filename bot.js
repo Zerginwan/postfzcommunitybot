@@ -60,13 +60,14 @@ async function SendEventMessage(message){
     bot.telegram.sendMessage(
         channel_id, 
         newMessage, 
-        markdown().webPreview(false).markup(m =>
-            m.inlineKeyboard([
-                m.callbackButton('❌ Спам!', 'report'),
-                m.callbackButton('🧡', 'like'),
-                // m.callbackButton('🏃', 'join'),
-            ])
-        ))
+        markdown().webPreview(false)
+        //.markup(m =>
+        //    m.inlineKeyboard([
+        //        m.callbackButton('❌ Спам!', 'report'),
+        //        m.callbackButton('🧡', 'like'),
+        //        // m.callbackButton('🏃', 'join'),
+        //    ])
+        //))
         .catch(logToAdmin(bot));
 }
 
@@ -199,7 +200,7 @@ bot.command('show_my_id',ctx => {
     ctx.reply(ctx.update.message.chat.id)
         .catch(logToAdmin(bot));
 })
-.catch(logToAdmin(bot));;
+.catch(logToAdmin(bot));
 
 bot.action('report', ctx => {
     let message_id = ctx.update.callback_query.message.message_id
