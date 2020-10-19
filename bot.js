@@ -67,7 +67,8 @@ async function SendEventMessage(message){
         //        m.callbackButton('🧡', 'like'),
         //        // m.callbackButton('🏃', 'join'),
         //    ])
-        //))
+        //)
+    	)
         .catch(logToAdmin(bot));
 }
 
